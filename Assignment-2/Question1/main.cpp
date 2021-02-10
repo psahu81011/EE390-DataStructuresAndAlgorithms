@@ -1,5 +1,4 @@
 #include<iostream>
-#include<vector>
 #include"num_comp.h"
 
 using namespace std;
