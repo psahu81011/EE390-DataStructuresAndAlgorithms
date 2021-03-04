@@ -5,6 +5,7 @@
 #include<math.h>
 #include<string.h>
 #include<cstdlib>
+#include<vector>
 
 using namespace std;
 
@@ -151,6 +152,81 @@ string Complex<T> :: as_string() {
     }
     
     return to_string(real)+"+i"+to_string(abs(img));
+}
+
+
+template<typename T>
+class Matrix {
+    private:
+        int row;
+        int colomn;
+        vector<vector<T > > matrix;
+    public:
+        Matrix();
+        Matrix(int Row, int Colomn);
+        Matrix(int Row, int Colomn, const vector<vector<T > > &mat);
+        void print_matrix();
+        Matrix<T> operator + (const Matrix<T> &obj);
+};
+
+
+template<typename T>
+Matrix<T> :: Matrix() {
+    row = 0;
+    colomn = 0;
+    matrix = {{0}};
+}
+
+
+template<typename T>
+Matrix<T> :: Matrix(int Row, int Colomn) {
+    row = Row;
+    colomn = Colomn;
+    vector<vector<T>> a(Row, vector<T> (Colomn, 0));
+    matrix = a;
+}
+
+
+template<typename T>
+Matrix<T> :: Matrix(int Row, int Colomn, const vector<vector<T > > &mat) {
+    row = Row;
+    colomn = Colomn;
+    matrix = mat;
+}
+
+
+template<typename T>
+void Matrix<T> :: print_matrix() {
+    for (int i = 0; i < row; i++)
+    {
+        cout<<"\n";
+        for (int j = 0; j < colomn; j++)
+        {
+            cout<<matrix[i][j]<<" ";
+        }
+    }
+    
+}
+
+
+template<typename T>
+Matrix<T> Matrix<T> :: operator + (const Matrix<T> &obj) {
+    Matrix<T> a;
+    if (!(obj.row==row && obj.colomn==colomn))
+    {
+        cout<<"\nCannot Add these matrices!!  Try with matrices having same dimentions..........";
+        return a;
+    }
+    vector<vector<T>> b(row, vector<T>(colomn));
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < colomn; j++)
+        {
+            b = 
+        }
+        
+    }
+    
 }
 
 
