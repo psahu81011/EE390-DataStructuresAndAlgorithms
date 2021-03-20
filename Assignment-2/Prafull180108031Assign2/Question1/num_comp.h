@@ -49,6 +49,39 @@ class Complex {
 };
 
 
+
+template<typename T>
+class Matrix {
+    private:
+        int row;
+        int column;
+        vector<vector<T > > matrix;
+    public:
+        Matrix();
+        Matrix(int Row, int Column);
+        Matrix(const vector<vector<T > > &mat);
+        Matrix(int Row, int Column, const vector<vector<T > > &mat);
+        void print_matrix();
+        void set_row(int Row);
+        void set_column(int Col);
+        void set_matrix(const vector<vector<T > > &Matrix);
+        int get_row();        
+        int get_column();        
+        vector<vector<T > > get_matrix();
+        Matrix<T> operator + (const Matrix<T> &obj);
+        Matrix<T> operator - (const Matrix<T> &obj);
+        Matrix<T> operator * (const Matrix<T> &obj);
+        Matrix<T> transpose();
+        Matrix<T> minor_matrix(int i, int j);
+        Matrix<T> adjoint();
+        Matrix<T> inverse();
+        T cofactor(int i, int j);
+        T minor(int i, int j);
+        T determinant();
+};
+
+
+
 template<typename T>
 Complex<T> :: Complex() {
     real = 0;
@@ -181,37 +214,6 @@ ostream& operator<< (ostream& os, const Complex<T> &obj) {
     
     return os << obj.real << " +i" << abs(obj.img) << " ";
 }
-
-
-template<typename T>
-class Matrix {
-    private:
-        int row;
-        int column;
-        vector<vector<T > > matrix;
-    public:
-        Matrix();
-        Matrix(int Row, int Column);
-        Matrix(const vector<vector<T > > &mat);
-        Matrix(int Row, int Column, const vector<vector<T > > &mat);
-        void print_matrix();
-        void set_row(int Row);
-        void set_column(int Col);
-        void set_matrix(const vector<vector<T > > &Matrix);
-        int get_row();        
-        int get_column();        
-        vector<vector<T > > get_matrix();
-        Matrix<T> operator + (const Matrix<T> &obj);
-        Matrix<T> operator - (const Matrix<T> &obj);
-        Matrix<T> operator * (const Matrix<T> &obj);
-        Matrix<T> transpose();
-        Matrix<T> minor_matrix(int i, int j);
-        Matrix<T> adjoint();
-        Matrix<T> inverse();
-        T cofactor(int i, int j);
-        T minor(int i, int j);
-        T determinant();
-};
 
 
 template<typename T>
