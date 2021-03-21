@@ -8,7 +8,7 @@
 using namespace std;
 
 #define dashed cout<<"\n"; for(int i = 0; i < 30; i++) { cout <<"--";}
-#define wait cout<<"\n\n\nEnter 0 to goto previous menu";char a;cin>>a;
+#define wait cout<<"\n\n\nEnter 0 to goto previous menu";cin>>a;
 #define clear_screen system("clear");
 
 
@@ -34,6 +34,7 @@ class Category {
     public:
         Category();
         string get_category_name();
+        vector<Item> get_items();
         void add_item(Item&);
         void display();
 };
@@ -60,6 +61,7 @@ class Customer {
         void checkout();
         void checkout(pair<Item,int>);
         void remove_from_cart(Item);
+        void shopping_page();
 };
 
 
@@ -72,7 +74,7 @@ class Seller {
         Seller();
         void display();
         void menu();
-        void input_seller_data(string);
+        bool input_seller_data(string);
         bool validate_user(string);
         void add_item();
 };
@@ -83,6 +85,7 @@ class Seller {
 vector<Category> category_list;
 unordered_map<string, Customer> customers;
 unordered_map<string, Seller> sellers;
+char a;
 
 //function prototypes
 
@@ -166,6 +169,10 @@ Category :: Category() {
 
 string Category :: get_category_name(){
     return category_name;
+}
+
+vector<Item> Category :: get_items() {
+    return items;
 }
 
 void Category :: add_item(Item &item) {
@@ -307,20 +314,108 @@ void Customer :: menu() {
         display_order_history();
         break;
     case '5':
+        shopping_page();
         break;
     case '6':
         checkout();
         break;
     case '7':
-        //change paassword
-        break;
-    case '8':
         return;
     default:
         break;
     }
     goto l;
 }
+
+
+
+void Customer :: shopping_page() {
+    l:
+    clear_screen
+    cout<<"Shopping page";
+    dashed
+    cout<<"\nChoose Category or 0 to abort";
+    dashed
+    for (int i = 0; i < category_list.size(); i++)
+    {
+        cout<<"\n"<<i+1<<". "<<category_list[i].get_category_name();
+    }
+    cout<<"\n";
+    string _choice;
+    cin>>_choice;
+    int choice = stoi(_choice);
+    if (choice == 0)
+    {
+        return;
+    }
+    if (choice <= category_list.size()) {
+        m:
+        clear_screen
+        cout<<"Category: "<<category_list[choice-1].get_category_name();
+        dashed
+        cout<<"\nChoose Item or 0 to abort";
+        dashed
+        vector<Item> items = category_list[choice-1].get_items();
+        for (int i = 0; i < items.size(); i++)
+        {
+            cout<<"\n"<<i+1<<". "<<items[i].get_item_name();
+        }
+        cout<<"\n";
+        string ___choice;
+        cin>>___choice;
+        int __choice = stoi(___choice);
+        if (__choice == 0)
+        {
+            goto l;
+        }
+        if (__choice <= items.size())
+        {
+            k:
+            clear_screen
+            cout<<"Product: "<<items[__choice-1].get_item_name();
+            dashed
+            cout<<"\nChoose option or 0 to abort";
+            dashed
+            cout<<"\n1. Add to cart";
+            cout<<"\n2. Add to wishlist";
+            cout<<"\n3. Buy";
+            char opt;
+            cin>>opt;
+            switch (opt)
+            {
+            case '0':
+                goto m;
+                break;
+            case '1':
+                cout<<"\nHow many to add to cart?: ";
+                int cart_no;
+                cin>>cart_no;
+                cart.push_back(make_pair(items[__choice-1], cart_no));
+                cout<<"\nAdded to cart successfully...";
+                wait
+                break;
+            case '2':
+                wishlist.push_back(items[__choice-1]);
+                cout<<"\nAdded to wishlist successfully...";
+                wait
+                break;
+            case '3':
+                cout<<"How many to buy?: ";
+                int buy_no;
+                cin>>buy_no;
+                checkout(make_pair(items[__choice-1],buy_no));
+                break;
+            default:
+                goto k;
+                break;
+            }
+            goto l;
+        }
+        goto m;
+    }
+    goto l;
+}
+
 
 
 void Customer :: display_cart() {
@@ -514,13 +609,18 @@ void Seller :: menu() {
 }
 
 
-void Seller :: input_seller_data(string id) {
+bool Seller :: input_seller_data(string id) {
     seller_id = id;
     string _password, confirm_password;
     m:
     cout<<"\nCreate password(minimum 4 letters): ";
+    cin.ignore();
     getline(cin,_password);
     l:
+    if (_password == "0")
+    {
+        return false;
+    }    
     if (_password.size() < 4)
     {
         cout<<"\nPassword should consist minimum 4 letters!!! Enter again: ";
@@ -528,6 +628,11 @@ void Seller :: input_seller_data(string id) {
     }
     cout<<"\nConfirm Password: ";
     getline(cin,confirm_password);
+    if (confirm_password == "0")
+    {
+        return false;
+    }
+    
     if (_password != confirm_password)
     {
         cout<<"\nPassword do not match!!!";
@@ -536,15 +641,27 @@ void Seller :: input_seller_data(string id) {
     password = _password;
     cout<<"\nEnter Company name: ";
     cin>>company_name;
+    if (company_name == "0")
+    {
+        return false;
+    }
+    
     n:
+    string _phone;
     cout<<"\nEnter 10 digit mobile number: ";
-    cin>>phone;
-    regex validate_phone(R"(\d{9})");
-    if (!regex_match(phone, validate_phone))
+    cin>>_phone;
+    if(_phone == "0")
+        return false;
+    regex validate_phone(R"(\d{10})");
+    if (!regex_match(_phone, validate_phone))
     {
         cout<<"\nEnter valid mobile number...";
         goto n;
     }
+    else{
+        phone = _phone;
+    }
+    return true;
 }
 
 
@@ -662,29 +779,29 @@ void customer_operations() {
 
 
 void seller_operations() {
-    while(1) {
-        cout<< "\nWelcome to Seller Login page......................\n\n";
-        cout<<"\n1. Register";
-        cout<<"\n2. Login";
-        cout<<"\n3. Back to main menu.....\n";
-        char choice;
-        cin >> choice;
-        switch (choice)
-        {
-        case '1':
-            register_new_seller();
-            break;
-        case '2':
-            login_seller();
-            break;
-        case '3':
-            return;
-
-        default:
-            cout<<"\nChoose valid option!!!\n\n";
-            break;
-        }
+    l:
+    clear_screen
+    cout<< "Welcome to Seller Login page";
+    dashed
+    cout<<"\n1. Register";
+    cout<<"\n2. Login";
+    cout<<"\n3. Back to main menu.....\n";
+    char choice;
+    cin >> choice;
+    switch (choice)
+    {
+    case '1':
+        register_new_seller();
+        break;
+    case '2':
+        login_seller();
+        break;
+    case '3':
+        return;
+    default:
+        break;
     }
+    goto l;
 }
 
 
@@ -762,19 +879,28 @@ void register_new_seller() {
     Seller s;
     string user_id;
     l:
-    cout<<"\n\nEnter 0 to abort... or Enter your preferred user id:";
+    clear_screen
+    cout<<"Seller Registration";
+    dashed
+    cout<<"\nEnter your preferred user id:";
     cin>> user_id;
     if (user_id == "0")
     {
         return;
     }
     
-    if (sellers.find(user_id) == sellers.end()) {
+    if (sellers.find(user_id) != sellers.end()) {
         cout<< " \nUser Id taken!!! Please enter a different user id...\n";
         goto l;
     }
-    s.input_seller_data(user_id);
-    sellers[user_id] = s;
+    if(s.input_seller_data(user_id)) {
+        sellers[user_id] = s;
+        cout<<"\nRegistration Complete";
+    }
+    else {
+        cout<<"\nRegistration Aborted!!!";
+    }
+    wait
 }
 
 
